@@ -1,0 +1,18 @@
+* /home/maldoror/Geliştirme/upp/.cache/upp.out/Projects/CLANG.Debug.Debug_Full.Shared/SecretStorageTest 01.05.2025 15:37:24, user: maldoror
+
+store.StorePassword(key, pwd) = true
+store.LoadPassword(key) == pwd = true
+store.DeletePassword(key) = true
+store.StoreBlob(key, pwd) = true
+store.LoadBlob(key) == pwd = true
+store.DeleteBlob(key) = true
+store.StorePassword(key, pwd) = true
+store.LoadPassword(key) == wrongpwd = false
+store.LoadPassword(wrongkey) == pwd = false
+store.DeletePassword(wrongkey) = false
+store.DeletePassword(key) = true
+store.StoreBlob(key, pwd) = true
+store.LoadBlob(key) == wrongpwd = false
+store.LoadBlob(wrongkey) == pwd = false
+store.DeleteBlob(wrongkey) = false
+store.DeleteBlob(key) = true
