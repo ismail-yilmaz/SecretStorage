@@ -10,7 +10,7 @@ public:
     SecretStorage()                                                  {}
     virtual ~SecretStorage()                                         {}
 
-    static  String GetPathName()                                     { return String("org.Upp.SecretStorage"); }
+    virtual String GetPathName() const                               { return String("org.Upp.SecretStorage"); }
     
     bool    StorePassword(const String& key, const String& pwd);
     String  LoadPassword(const String& key);
@@ -22,7 +22,11 @@ public:
 
     String  GetErrorDesc()const                                      { return err; }
     
+    hash_t  GetHashValue() const                                     { return GetPathName().GetHashValue(); }
+    
 private:
+	String  MakeKey(const String& key)                               { return UnixPath(AppendFileName(GetPathName(), key)); }
+	
     String err;
 };
 

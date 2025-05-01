@@ -1,6 +1,6 @@
 #include "SecretStorage.h"
 
-#ifdef PLATFORM_LINUX
+#if defined(PLATFORM_POSIX) && !(defined(PLATFORM_MACOS) || defined(PLATFORM_ANDROID))
 
 #include <glib.h>
 #include <libsecret/secret.h>
@@ -41,14 +41,16 @@ bool SecretStorage::StorePassword(const String& key, const String& pwd)
 
 	LTIMING("StorePassword");
 	
+	String k = MakeKey(key);
+	
 	gboolean success = secret_password_store_sync(
 		GetGenericSchema(),
 		SECRET_COLLECTION_DEFAULT,
-		~key,
+		~k,
 		pwd,
 		nullptr,
 		&error,
-		"data", ~key, nullptr);
+		"data", ~k, nullptr);
 
 	if(error)
 		err = MakeErrorMsg(error, t_("Failed storing secret"));
@@ -67,7 +69,7 @@ String SecretStorage::LoadPassword(const String& key)
 		GetGenericSchema(),
 		nullptr,
 		&error,
-		"data",~key, nullptr);
+		"data", ~MakeKey(key), nullptr);
 		
 	if(error) {
 		err = MakeErrorMsg(error, t_("Failed retrieving secret"));
@@ -90,7 +92,7 @@ bool SecretStorage::DeletePassword(const String& key)
 		GetGenericSchema(),
 		nullptr,
 		&error,
-		"data", ~key, nullptr);
+		"data", ~MakeKey(key), nullptr);
 		
 	if(error)
 		err = MakeErrorMsg(error, t_("Failed deleting secret"));

@@ -22,7 +22,7 @@ bool SecretStorage::StorePassword(const String& key, const String& pwd)
 	LTIMING("StorePassword");
 	
 	err = Null;
-	Vector<WCHAR> k = ToSystemCharsetW(key);
+	Vector<WCHAR> k = ToSystemCharsetW(MakeKey(key));
 
 	CREDENTIALW credentials = { 0 };
 	credentials.Type = CRED_TYPE_GENERIC;
@@ -46,7 +46,8 @@ String SecretStorage::LoadPassword(const String& key)
 	
 	err = Null;
 	PCREDENTIALW credentials = nullptr;
-	if(CredReadW(ToSystemCharsetW(key), CRED_TYPE_GENERIC, 0, &credentials)) {
+	Vector<WCHAR> k = ToSystemCharsetW(MakeKey(key));
+	if(CredReadW(k, CRED_TYPE_GENERIC, 0, &credentials)) {
 		String result(credentials->CredentialBlob, credentials->CredentialBlobSize);
 		CredFree(credentials);
 		return result;
@@ -61,7 +62,8 @@ bool SecretStorage::DeletePassword(const String& key)
 	LTIMING("DeletePassword");
 	
 	err = Null;
-	if(!CredDeleteW(ToSystemCharsetW(key), CRED_TYPE_GENERIC, 0)) {
+	Vector<WCHAR> k = ToSystemCharsetW(MakeKey(key));
+	if(!CredDeleteW(k, CRED_TYPE_GENERIC, 0)) {
 		err = MakeErrorMsg(t_("Failed deleting secret"));
 		return false;
 	}
